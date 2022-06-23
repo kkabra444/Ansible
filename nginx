@@ -1,0 +1,32 @@
+#Nginx configuration with default port changes and firewall reload
+---
+ - name: Intsall Nginx and make default port to 8080
+   become: yes
+   hosts: demo
+   tasks:
+     - name: Install nginx
+       yum:
+         name: nginx
+         state: present
+     - name: Make port 8080 as default port
+       copy:
+         src: /etc/nginx/nginx.conf
+         dest: /etc/nginx/nginx.conf
+     - name: Start Nginx
+       service:
+         name: nginx
+         state: started
+
+     - name: Firewall port addition
+       firewalld:
+         port: 8080/tcp
+         permanent: yes
+         zone: public
+         state: enabled
+
+     - name: Reload Firewall
+       systemd:
+         name: firewalld
+         state: reloaded
+
+...
